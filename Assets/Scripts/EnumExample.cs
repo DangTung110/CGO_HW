@@ -1,71 +1,43 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 
-public enum EnumTarget
+public enum GameState
 {
-    TopLeft,
-    TopRight,
-    BottonLeft,
-    BottonRight
+    MainMenu,
+    InGame,
+    Paussed,
+    GameOver
 }
+
+
 public class EnumExample : MonoBehaviour
 {
-    public GameObject TopLeftPosition;
-    public GameObject TopRightPosition;
-    public GameObject BottonLeftPosition;
-    public GameObject BottonRightPosition;
-    private GameObject currentTarget;
-    private EnumTarget currentFlag;
-    public float distance;
+    public GameState currentState;
 
-    private void Awake()
-    {
-        TopLeftPosition = GameObject.Find("TopLeft");
-        TopRightPosition = GameObject.Find("TopRight");
-        BottonLeftPosition = GameObject.Find("BottonLeft");
-        BottonRightPosition = GameObject.Find("BottonRight");
-    }
+    public Transform pointA;
+    public Transform pointB;
+
     // Start is called before the first frame update
     void Start()
     {
-        currentFlag = EnumTarget.TopLeft;
-        currentTarget = TopLeftPosition;
+        currentState = GameState.MainMenu;
+
+        float distance = (pointA.position - pointB.position).magnitude;
+
     }
+
     // Update is called once per frame
     void Update()
     {
-        Vector3 moveDirection = currentTarget.transform.position - transform.position;
-        distance = moveDirection.magnitude;
-        if (distance <= 0f)
+        if (currentState == GameState.MainMenu)
         {
-            Vector3 direction = currentTarget.transform.position - transform.position;
-            Quaternion targetRotation = Quaternion.LookRotation(direction, Vector3.up);
-            transform.rotation = targetRotation;
-            SetNextTarget(currentFlag);
+            // Hiển thị UI Menu
         }
-    }
-    private void SetNextTarget(EnumTarget flag) // TopLeft -> TopRight -> BottonRight -> BottonLeft -> TopLeft
-    {
-        switch (flag)
+        else if (currentState == GameState.InGame)
         {
-            case EnumTarget.TopLeft:
-                currentTarget = TopLeftPosition;
-                flag = EnumTarget.TopRight;
-                break;
-            case EnumTarget.TopRight:
-                currentTarget = TopRightPosition;
-                flag = EnumTarget.BottonRight;
-                break;
-            case EnumTarget.BottonRight:
-                currentTarget = BottonRightPosition;
-                flag = EnumTarget.BottonLeft;
-                break;
-            case EnumTarget.BottonLeft:
-                currentTarget = BottonLeftPosition;
-                flag = EnumTarget.TopLeft;
-                break;
+            // ẩn UI Menu
+            // Hiện In Game UI
         }
     }
 }
