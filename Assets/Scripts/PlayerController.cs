@@ -48,6 +48,7 @@ public class PlayerController : MonoBehaviour
         Vector3 movement = new Vector3 (0f, 0f, vertical) * speed * Time.deltaTime;
         transform.Translate(movement);
         transform.Rotate(0f, 10 * speed * Time.deltaTime * horizontal, 0f);
+        Debug.Log(horizontal);
     }
     private void AutoMode()
     {
@@ -61,7 +62,6 @@ public class PlayerController : MonoBehaviour
             // Khi chưa tới điểm tiếp theo thì vẫn tiếp tục di chuyển
             transform.position = Vector3.MoveTowards(transform.position,
                 currentTarget.position, speed * Time.deltaTime);
-
             // Từ frame 1 => frame 2  
         }
         else
@@ -69,7 +69,6 @@ public class PlayerController : MonoBehaviour
             // Chuyen target
             SetNextTarget(nextTarget);
         }
-
         // Thay đổi góc quay theo hướng target
         Vector3 direction = currentTarget.position - transform.position;
         Quaternion targetRotation = Quaternion.LookRotation(direction, Vector3.up);
