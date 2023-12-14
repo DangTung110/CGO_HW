@@ -7,7 +7,7 @@ public class CameraFollow : MonoBehaviour
 {
     private GameObject player;
     [SerializeField] private Vector3 target;
-    [SerializeField] private float speed = 20.0f;
+    [SerializeField] private float speed = 10.0f;
     private void Awake()
     {
         player = GameObject.Find("Player");

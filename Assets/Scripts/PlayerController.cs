@@ -16,7 +16,7 @@ public enum DriverMode
 }
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] float speed = 20.0f;
+    [SerializeField] float speed = 10.0f;
     [SerializeField] Transform topLeftTransform;
     [SerializeField] Transform topRightTransform;
     [SerializeField] Transform bottomLeftTransform;
@@ -48,7 +48,6 @@ public class PlayerController : MonoBehaviour
         Vector3 movement = new Vector3 (0f, 0f, vertical) * speed * Time.deltaTime;
         transform.Translate(movement);
         transform.Rotate(0f, 10 * speed * Time.deltaTime * horizontal, 0f);
-        Debug.Log(horizontal);
     }
     private void AutoMode()
     {
