@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public enum TargetEnum
 {
@@ -17,7 +18,9 @@ public enum DriverMode
 public class PlayerController : MonoBehaviour
 {
     public Rigidbody rb;
-    private float speed = 20.0f; // tốc độ của xe
+    private float speed = 10.0f; // tốc độ của xe
+    float horizontal;
+    float vertical;
     private TargetEnum nextTarget = TargetEnum.TopLeft; // Gán trạng thái
     private Transform currentTarget;
     private Transform topLeftTransform;
@@ -26,37 +29,48 @@ public class PlayerController : MonoBehaviour
     private Transform bottomRightTransform;
     [SerializeField] DriverMode mode = DriverMode.Manual;
     [SerializeField] double damaged = 0.0f; // mức độ hư hại của xe
-    [SerializeField] int fuel = 0; // lượng xăng hiên có
-    [SerializeField] int capacity = 100; // tổng lượng xăng
+    [SerializeField] float fuel = 0; // lượng xăng hiên có
+    [SerializeField] float capacity = 100; // tổng lượng xăng
 
-    private void Awake()
-    {
-        rb = GetComponent<Rigidbody>();
-    }
+    //private void Awake()
+    //{
+    //    rb = GetComponent<Rigidbody>();
+    //}
     // Start is called before the first frame update
     void Start()
     { 
         currentTarget = topLeftTransform;
+        fuel = capacity;
     }
     // Update is called once per frame
     void Update()
     {
         if (mode == DriverMode.Auto)
             AutoMode();
-    }
-    private void FixedUpdate()
-    {
-        if (mode == DriverMode.Manual)
+        else if (mode == DriverMode.Manual)
             ManualMode();
     }
+    //private void FixedUpdate()
+    //{
+    //    if (mode == DriverMode.Manual)
+    //        ManualMode();
+    //}
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.tag == "Petro2") fuel += 25;
-        if (collision.gameObject.tag == "Petro1") capacity += 10;
         if (collision.gameObject.tag == "Barrier")  damaged += 5;
     }
     private void OnTriggerEnter(Collider other)
     {
+        if (other.gameObject.tag == "Petro2")
+        {
+            fuel += 25;
+            other.gameObject.SetActive(false);
+        }
+        if (other.gameObject.tag == "Petro1") 
+        { 
+            capacity += 10; 
+            other.gameObject.SetActive(false);
+        }
         if (other.gameObject.tag == "Corn30")
         {
             other.gameObject.SetActive(false);
@@ -67,15 +81,23 @@ public class PlayerController : MonoBehaviour
             other.gameObject.SetActive(false);
             damaged = 0;
         }
+        if (other.gameObject.tag == "GoalLine")
+            Time.timeScale = 0f;
+            //SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
     private void ManualMode()
     {
-        float horizontal = Input.GetAxis("Horizontal");
-        float vertical = Input.GetAxis("Vertical");
+        horizontal = Input.GetAxis("Horizontal");
+        vertical = Input.GetAxis("Vertical");
+        Vector3 movement = new Vector3 (0f, 0f, vertical) * speed * Time.deltaTime;
+        transform.Translate(movement);
 
-        Vector3 movement = new Vector3 (horizontal, 0f, vertical);
-        rb.AddForce(movement * speed);
+        //Vector3 movement = new Vector3 (horizontal, 0f, vertical) * speed;
+        //rb.AddForce(movement);
+        fuel -= vertical * Time.deltaTime;
         transform.Rotate(0f, 10 * speed * Time.deltaTime * horizontal, 0f);
+        if (damaged == 100) Time.timeScale = 0f;
+
     }
     private void AutoMode()
     {
