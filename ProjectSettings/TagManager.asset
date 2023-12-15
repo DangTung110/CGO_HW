@@ -3,7 +3,12 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Barrier
+  - Petro1
+  - Petro2
+  - Corn30
+  - Corn100
   layers:
   - Default
   - TransparentFX
