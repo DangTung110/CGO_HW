@@ -9,6 +9,7 @@ TagManager:
   - Petro2
   - Corn30
   - Corn100
+  - GoalLine
   layers:
   - Default
   - TransparentFX
@@ -16,7 +17,7 @@ TagManager:
   - 
   - Water
   - UI
-  - 
+  - UI_BackGound
   - 
   - 
   - 

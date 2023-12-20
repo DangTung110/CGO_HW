@@ -18,7 +18,8 @@ public enum DriverMode
 public class PlayerController : MonoBehaviour
 {
     public Rigidbody rb;
-    private float speed = 10.0f; // tốc độ của xe
+    float speed = 0.2f; // tốc độ của xe
+    public float rotationSpeed = 50f;
     float horizontal;
     float vertical;
     private TargetEnum nextTarget = TargetEnum.TopLeft; // Gán trạng thái
@@ -32,10 +33,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float fuel = 0; // lượng xăng hiên có
     [SerializeField] float capacity = 100; // tổng lượng xăng
 
-    //private void Awake()
-    //{
-    //    rb = GetComponent<Rigidbody>();
-    //}
+    private void Awake()
+    {
+        rb = GetComponent<Rigidbody>();
+        rb.interpolation = RigidbodyInterpolation.Interpolate;
+        rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
+    }
     // Start is called before the first frame update
     void Start()
     { 
@@ -47,14 +50,14 @@ public class PlayerController : MonoBehaviour
     {
         if (mode == DriverMode.Auto)
             AutoMode();
-        else if (mode == DriverMode.Manual)
-            ManualMode();
     }
-    //private void FixedUpdate()
-    //{
-    //    if (mode == DriverMode.Manual)
-    //        ManualMode();
-    //}
+    private void FixedUpdate()
+    {
+        if (mode == DriverMode.Manual)
+        {
+            ManualMode();
+        }
+    }
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.tag == "Barrier")  damaged += 5;
@@ -89,14 +92,9 @@ public class PlayerController : MonoBehaviour
     {
         horizontal = Input.GetAxis("Horizontal");
         vertical = Input.GetAxis("Vertical");
-        Vector3 movement = new Vector3 (0f, 0f, vertical) * speed * Time.deltaTime;
-        transform.Translate(movement);
-
-        //Vector3 movement = new Vector3 (horizontal, 0f, vertical) * speed;
-        //rb.AddForce(movement);
-        fuel -= vertical * Time.deltaTime;
-        transform.Rotate(0f, 10 * speed * Time.deltaTime * horizontal, 0f);
-        if (damaged == 100) Time.timeScale = 0f;
+        // Thêm hàm xử lý di chuyển và xoay. Set freeze rotation ngoài rigidbody để xe không bị xoay.
+        MoveCar(vertical);
+        RotateCar(horizontal);
 
     }
     private void AutoMode()
@@ -146,4 +144,22 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    void MoveCar(float input)
+    {
+        // Tính toán vectơ di chuyển
+        Vector3 movement = transform.forward * input * speed;
+
+        // Áp dụng lực di chuyển lên Rigidbody, thêm lực theo kiểu thay đổi vận tốc thì xe sẽ đi mượn hơn
+        rb.AddForce(movement, ForceMode.VelocityChange);
+    }
+
+    void RotateCar(float input)
+    {
+        // Tính toán góc xoay
+        float rotation = input * rotationSpeed * Time.deltaTime;
+
+        // Xoay xe quanh trục y
+        Quaternion deltaRotation = Quaternion.Euler(Vector3.up * rotation);
+        rb.MoveRotation(rb.rotation * deltaRotation);
+    }
 }
